@@ -26,9 +26,10 @@ namespace Tests_server_app
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("Default");
+            var connectionString = Configuration.GetConnectionString("CW_Task_Core");
             services.AddDbContext<TestsDbContext>(
-                options => options.UseSqlServer(connectionString));
+                options => options.UseSqlServer(connectionString),
+                ServiceLifetime.Singleton);
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

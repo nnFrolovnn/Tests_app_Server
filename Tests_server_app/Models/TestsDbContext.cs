@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,9 +94,8 @@ namespace Tests_server_app.Models
                 .HasForeignKey(x => x.AchievementId);
         }
 
-        public TestsDbContext(DbContextOptions<TestsDbContext> options): base(options)
+        public TestsDbContext (DbContextOptions<TestsDbContext> options): base(options)
         {
-
         }
     }
 }

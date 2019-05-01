@@ -36,7 +36,7 @@ namespace Tests_server_app.Models.DBModels
 
         public long RoleId { get; set; }
 
-        public virtual List<UserTest> Tests { get; set; }
-        public virtual List<UserAchievement> Achievements { get; set; }
+        internal virtual List<UserTest> Tests { get; set; }
+        internal virtual List<UserAchievement> Achievements { get; set; }
     }
 }
