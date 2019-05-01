@@ -1,0 +1,7 @@
+{
+  "AuthType": "JWT",
+  "Issuer": "Tests_server_app",
+  "Audience": "local",
+  "Key": "77TTD3400941764LMGXCC63392732",
+  "Lifetime": "5"
+}

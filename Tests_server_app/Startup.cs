@@ -11,7 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Tests_server_app.Models;
+using Microsoft.AspNetCore.Authentication;
+using Tests_server_app.Extensions;
+using Tests_server_app.Services.Authentication;
 
 namespace Tests_server_app
 {
@@ -22,15 +26,27 @@ namespace Tests_server_app
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; private set; }
 
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            // authentication
+            var authOptions = JWTBearerAuthOptions.LoadJsonOptions(@"\Services\Authentication\authsettings.json");
+            services.AddJWTBearerAuthentication(authOptions);
+
+            // auth options
+            services.AddSingleton(typeof(IJWTBearerAuthOptions), authOptions);
+            
+            // configuration
+            Configuration = configuration;
+
+            // configure db
             var connectionString = Configuration.GetConnectionString("CW_Task_Core");
             services.AddDbContext<TestsDbContext>(
                 options => options.UseSqlServer(connectionString),
                 ServiceLifetime.Singleton);
 
+            // configure mvc
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -49,6 +65,8 @@ namespace Tests_server_app
             }
 
             //app.UseHttpsRedirection();
+
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

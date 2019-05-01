@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tests_server_app.Models.DBModels
 {
-    public enum RolesNames
+    public enum RolesName
     {
         User, Admin, Boss
     }
@@ -21,7 +21,7 @@ namespace Tests_server_app.Models.DBModels
         [Key]
         public long RoleId { get; set; }
 
-        public RolesNames RoleName { get; set; }
+        public RolesName RoleName { get; set; }
 
         public RolesPermissions Permissions { get; set; }
 

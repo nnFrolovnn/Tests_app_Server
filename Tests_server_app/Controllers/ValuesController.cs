@@ -24,23 +24,6 @@ namespace Tests_server_app.Controllers
         [HttpGet("{id}")]
         public ActionResult<IEnumerable<Achievement>> Get(int id)
         {
-            db.Roles.Add(new Role()
-            {
-                RoleName = RolesNames.Boss
-            });
-            db.SaveChanges();
-            db.Users.Add(new User()
-            {
-                FirstName = "Vlad",
-                SecondName = "Frolov",
-                Email = "vlad@mail.ru",
-                Login = "vlad",
-                PasswordHash = "fsdfsdfsdf",
-                SignedUpWithAccount = SignedUpWith.Application,
-                BirthDate = DateTime.Now.Date,
-                RoleId = 1
-            });
-            db.SaveChanges();
             return db.Achievements.ToList();
         }
 
