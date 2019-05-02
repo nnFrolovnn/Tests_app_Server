@@ -28,17 +28,15 @@ namespace Tests_server_app
 
         public IConfiguration Configuration { get; private set; }
 
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        public void ConfigureServices(IServiceCollection services)
         {
             // authentication
-            var authOptions = JWTBearerAuthOptions.LoadJsonOptions(@"\Services\Authentication\authsettings.json");
+            var authOptions = JWTBearerAuthOptions.LoadJsonOptions("authsettings.json");
             services.AddJWTBearerAuthentication(authOptions);
 
             // auth options
             services.AddSingleton(typeof(IJWTBearerAuthOptions), authOptions);
-            
-            // configuration
-            Configuration = configuration;
+            services.AddJWTTokenGenerationService();
 
             // configure db
             var connectionString = Configuration.GetConnectionString("CW_Task_Core");
@@ -64,7 +62,7 @@ namespace Tests_server_app
                 app.UseHsts();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseMvc();

@@ -34,5 +34,11 @@ namespace Tests_server_app.Extensions
 
             return services;
         }
+
+        public static IServiceCollection AddJWTTokenGenerationService(this IServiceCollection services)
+        {
+            services.AddScoped<IJWTTokenGenerationService, JWTTokenGenerationService>();
+            return services;
+        }
     }
 }

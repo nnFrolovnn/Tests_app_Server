@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Tests_server_app.Models;
 using Tests_server_app.Models.DBModels;
+using Tests_server_app.Models.ViewModels;
+using Tests_server_app.Services.Authentication;
 
 namespace Tests_server_app.Controllers
 {
@@ -12,44 +18,54 @@ namespace Tests_server_app.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        TestsDbContext db;
-        // GET api/user
+        private readonly TestsDbContext db;
+        private readonly IJWTTokenGenerationService jWTTokenGenerationService;
+
         [HttpGet]
-        public ActionResult<IEnumerable<User>> Get()
+        public ActionResult<IEnumerable<User>> Index()
         {
             return db.Users.ToList();
         }
 
-        // GET api/user/5
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<IEnumerable<Achievement>> Get(int id)
         {
             return db.Achievements.ToList();
         }
 
-        // POST api/user
-        [HttpPost]
-        public void Post([FromBody] User user)
+        [HttpGet]
+        public string Login()
         {
-            db.Users.Add(user);
-            db.SaveChanges();
+            UserVM user = new UserVM()
+            {
+                PasswordHash = "fsdfsdfsdf",
+                Login = "vlad"
+            };
+
+            User dbUser = db.Users.FirstOrDefault(x => 
+                             x.Login == user.Login && x.PasswordHash == user.PasswordHash);
+
+            if (dbUser != null)
+            {
+                var token = jWTTokenGenerationService.GetToken(dbUser);
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+
+            return null;
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpGet]
+        [Authorize]
+        public string Acc()
         {
+            return $"you are authorized {User.Identity.Name}, {User.Identity.IsAuthenticated}";
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-
-        public ValuesController(TestsDbContext testsDbContext)
+        public ValuesController(TestsDbContext testsDbContext, IJWTTokenGenerationService generationService)
         {
             db = testsDbContext;
+            jWTTokenGenerationService = generationService;
         }
     }
 }
