@@ -18,7 +18,6 @@ namespace Tests_server_app.Models.DBModels
 
         public string Login { get; set; }
 
-        [DataType(DataType.Password)]
         public string PasswordHash { get; set; }
 
         public SignedUpWith SignedUpWithAccount { get; set; }

@@ -48,11 +48,12 @@ namespace Tests_server_app
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            
+            // cors
+            services.AddCors();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
+        {        
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -62,7 +63,10 @@ namespace Tests_server_app
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors(builder => builder.AllowAnyOrigin());
+            app.UseStaticFiles();
+
+            // app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseMvc();

@@ -46,8 +46,8 @@ namespace Tests_server_app.Services.Authentication
         {
             var claims = new List<Claim>
                 {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.RoleId.ToString())
+                    new Claim("UserLogin", user.Login),
+                    new Claim("RoleId", user.RoleId.ToString())
                 };
 
             ClaimsIdentity claimsIdentity =
