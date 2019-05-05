@@ -21,10 +21,17 @@ namespace Tests_server_app.Models.DBModels
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
-        public bool Cheched { get; set; }
+        public bool Checked { get; set; }
 
-        public virtual List<TestQuestion> Questions { get; set; }
-        public virtual List<TestTheme> Themes { get; set; }
-        public virtual List<UserTest> Users { get; set; }
+        public virtual ICollection<TestQuestion> Questions { get; set; }
+        public virtual ICollection<TestTheme> Themes { get; set; }
+        public virtual ICollection<UserTest> Users { get; set; }
+
+        public Test()
+        {
+            Questions = new List<TestQuestion>();
+            Themes = new List<TestTheme>();
+            Users = new List<UserTest>();
+        }
     }
 }

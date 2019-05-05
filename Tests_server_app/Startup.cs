@@ -38,6 +38,9 @@ namespace Tests_server_app
             services.AddSingleton(typeof(IJWTBearerAuthOptions), authOptions);
             services.AddJWTTokenGenerationService();
 
+            // users helpers
+            services.AddUsersMappingService();
+
             // configure db
             var connectionString = Configuration.GetConnectionString("CW_Task_Core");
             services.AddDbContext<TestsDbContext>(

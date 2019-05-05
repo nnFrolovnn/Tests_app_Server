@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tests_server_app.Models;
 
 namespace Tests_server_app.Migrations
 {
     [DbContext(typeof(TestsDbContext))]
-    partial class TestsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190505082242_fixedInitial")]
+    partial class fixedInitial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,7 +123,7 @@ namespace Tests_server_app.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("Checked");
+                    b.Property<bool>("Cheched");
 
                     b.Property<DateTime>("CreationDate");
 
@@ -243,12 +245,12 @@ namespace Tests_server_app.Migrations
 
             modelBuilder.Entity("Tests_server_app.Models.DBModels.Achievement", b =>
                 {
-                    b.HasOne("Tests_server_app.Models.DBModels.Icon", "Icon")
+                    b.HasOne("Tests_server_app.Models.DBModels.Icon")
                         .WithMany("Achievements")
                         .HasForeignKey("IconId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Tests_server_app.Models.DBModels.Theme", "Theme")
+                    b.HasOne("Tests_server_app.Models.DBModels.Theme")
                         .WithMany("Achievements")
                         .HasForeignKey("ThemeId")
                         .OnDelete(DeleteBehavior.Cascade);

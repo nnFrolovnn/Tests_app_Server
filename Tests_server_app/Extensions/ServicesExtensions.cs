@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tests_server_app.Services.Authentication;
+using Tests_server_app.Services.UsersMapping;
 
 namespace Tests_server_app.Extensions
 {
@@ -38,6 +39,12 @@ namespace Tests_server_app.Extensions
         public static IServiceCollection AddJWTTokenGenerationService(this IServiceCollection services)
         {
             services.AddScoped<IJWTTokenGenerationService, JWTTokenGenerationService>();
+            return services;
+        }
+
+        public static IServiceCollection AddUsersMappingService(this IServiceCollection services)
+        {
+            services.AddScoped<IUsersMappingService, UsersMappingService>();
             return services;
         }
     }

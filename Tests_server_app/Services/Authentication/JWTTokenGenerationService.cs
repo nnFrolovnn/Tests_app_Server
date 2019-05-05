@@ -34,7 +34,8 @@ namespace Tests_server_app.Services.Authentication
                         notBefore: now,
                         claims: identity.Claims,
                         expires: now.Add(TimeSpan.FromMinutes(authOptions.Lifetime)),
-                        signingCredentials: new SigningCredentials(authOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+                        signingCredentials: new SigningCredentials(authOptions.GetSymmetricSecurityKey(), 
+                                                                   SecurityAlgorithms.HmacSha256));
 
                 return jwt;
             }
@@ -46,8 +47,8 @@ namespace Tests_server_app.Services.Authentication
         {
             var claims = new List<Claim>
                 {
-                    new Claim("UserLogin", user.Login),
-                    new Claim("RoleId", user.RoleId.ToString())
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name)
                 };
 
             ClaimsIdentity claimsIdentity =

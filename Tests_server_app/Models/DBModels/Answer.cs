@@ -11,6 +11,11 @@ namespace Tests_server_app.Models.DBModels
         [DataType(DataType.MultilineText)]
         public string AnswerText { get; set; }
 
-        public virtual List<QuestionAnswer> Questions { get; set; }
+        public virtual ICollection<QuestionAnswer> Questions { get; set; }
+
+        public Answer()
+        {
+            Questions = new List<QuestionAnswer>();
+        }
     }
 }

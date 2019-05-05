@@ -9,10 +9,10 @@ namespace Tests_server_app.Models.DBModels
     public class UserTest
     {
         public long UserId { get; set; }
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
         public long TestId { get; set; }
-        public Test Test { get; set; }
+        public virtual Test Test { get; set; }
 
         public int CountAnsweredQuestions { get; set; }
         public int CountRightAnswers { get; set; }

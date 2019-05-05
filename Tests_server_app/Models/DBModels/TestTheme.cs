@@ -8,9 +8,9 @@ namespace Tests_server_app.Models.DBModels
     public class TestTheme
     {
         public long TestId { get; set; }
-        public Test Test { get; set; }
+        public virtual Test Test { get; set; }
 
         public long ThemeId { get; set; }
-        public Theme Theme { get; set; }
+        public virtual Theme Theme { get; set; }
     }
 }

@@ -13,7 +13,13 @@ namespace Tests_server_app.Models.DBModels
 
         public string ThemeName { get; set; }
 
-        public virtual List<TestTheme> Tests { get; set; }
-        public virtual List<Achievement> Achievements { get; set; }
+        public virtual ICollection<TestTheme> Tests { get; set; }
+        public virtual ICollection<Achievement> Achievements { get; set; }
+
+        public Theme()
+        {
+            Tests = new List<TestTheme>();
+            Achievements = new List<Achievement>();
+        }
     }
 }

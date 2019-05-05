@@ -13,7 +13,13 @@ namespace Tests_server_app.Models.DBModels
 
         public int Weightiness { get; set; }
 
-        public virtual List<TestQuestion> Tests { get; set; }
-        public virtual List<QuestionAnswer> Answers { get; set; }
+        public virtual ICollection<TestQuestion> Tests { get; set; }
+        public virtual ICollection<QuestionAnswer> Answers { get; set; }
+
+        public Question()
+        {
+            Tests = new List<TestQuestion>();
+            Answers = new List<QuestionAnswer>();
+        }
     }
 }

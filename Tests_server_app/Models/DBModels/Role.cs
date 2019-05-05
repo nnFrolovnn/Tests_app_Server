@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace Tests_server_app.Models.DBModels
 {
-    public enum RolesName
-    {
-        User, Admin, Boss
-    }
-
     public enum RolesPermissions
     {
         All, CreateTests, DeleteTests, LikeSmth, AllExceptDeleteAndLikeTests
@@ -21,10 +16,15 @@ namespace Tests_server_app.Models.DBModels
         [Key]
         public long RoleId { get; set; }
 
-        public RolesName RoleName { get; set; }
+        public string Name { get; set; }
 
         public RolesPermissions Permissions { get; set; }
 
         public virtual List<User> Users { get; set; }
+
+        public Role()
+        {
+            Users = new List<User>();
+        }
     }
 }

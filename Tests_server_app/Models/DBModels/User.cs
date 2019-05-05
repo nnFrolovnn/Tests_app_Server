@@ -34,8 +34,15 @@ namespace Tests_server_app.Models.DBModels
         public string Email { get; set; }
 
         public long RoleId { get; set; }
+        public virtual Role Role { get; set; }
 
-        internal virtual List<UserTest> Tests { get; set; }
-        internal virtual List<UserAchievement> Achievements { get; set; }
+        public virtual ICollection<UserTest> Tests { get; set; }
+        public virtual ICollection<UserAchievement> Achievements { get; set; }
+
+        public User()
+        {
+            Tests = new List<UserTest>();
+            Achievements = new List<UserAchievement>();
+        }
     }
 }

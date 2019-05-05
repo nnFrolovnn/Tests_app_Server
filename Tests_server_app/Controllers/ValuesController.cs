@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Tests_server_app.Models;
 using Tests_server_app.Models.DBModels;
@@ -21,23 +22,18 @@ namespace Tests_server_app.Controllers
         private readonly TestsDbContext db;
         private readonly IJWTTokenGenerationService jWTTokenGenerationService;
 
-        [HttpGet]
-        public ActionResult<IEnumerable<User>> Index()
-        {
-            return db.Users.ToList();
-        }
 
         [HttpGet("{id}")]
-        [Authorize]
-        public ActionResult<IEnumerable<Achievement>> Get(int id)
+        public ActionResult<Role> Get(int id)
         {
-            return db.Achievements.ToList();
+            return db.Roles.First();
         }
 
         [HttpGet]
+        [Route("/login")]
         public string Login()
         {
-            UserVM user = new UserVM()
+            UserLoginVM user = new UserLoginVM()
             {
                 PasswordHash = "fsdfsdfsdf",
                 Login = "vlad"
@@ -48,6 +44,9 @@ namespace Tests_server_app.Controllers
 
             if (dbUser != null)
             {
+                dbUser.Role = db.Roles.Single(
+                        x => x.RoleId == dbUser.RoleId);
+
                 var token = jWTTokenGenerationService.GetToken(dbUser);
                 return new JwtSecurityTokenHandler().WriteToken(token);
             }
@@ -57,6 +56,7 @@ namespace Tests_server_app.Controllers
 
         [HttpGet]
         [Authorize]
+        [Route("/acc")]
         public string Acc()
         {
             return $"you are authorized {User.Identity.Name}, {User.Identity.IsAuthenticated}";

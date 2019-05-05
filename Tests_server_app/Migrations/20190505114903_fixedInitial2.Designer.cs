@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tests_server_app.Models;
 
 namespace Tests_server_app.Migrations
 {
     [DbContext(typeof(TestsDbContext))]
-    partial class TestsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190505114903_fixedInitial2")]
+    partial class fixedInitial2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

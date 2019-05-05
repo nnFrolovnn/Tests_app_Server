@@ -8,7 +8,7 @@ using Tests_server_app.Models.ViewModels;
 
 namespace Tests_server_app.Services.UsersMapping
 {
-    public class UsersMappingService
+    public class UsersMappingService : IUsersMappingService
     {
         private readonly TestsDbContext _context;
 
@@ -19,22 +19,57 @@ namespace Tests_server_app.Services.UsersMapping
 
         public User GetUser(UserLoginVM userLoginVM)
         {
-            return _context.Users.First(x => 
-                    x.Login == userLoginVM.Login && 
-                    x.PasswordHash == userLoginVM.PasswordHash);
+            if (userLoginVM != null)
+            {
+                return _context.Users.First(x =>
+                        x.Login == userLoginVM.Login &&
+                        x.PasswordHash == userLoginVM.PasswordHash);
+            }
+            return null;
         }
 
         public UserLoginVM GetUserLoginVM(User user)
         {
-            return new UserLoginVM()
+            if (user != null)
             {
-                PasswordHash = user.PasswordHash,
-                Login = user.Login
-            };
+                return new UserLoginVM()
+                {
+                    PasswordHash = user.PasswordHash,
+                    Login = user.Login
+                };
+            }
+            return null;
         }
 
         public UserInformationVM GetUserInformationVM(User user)
         {
+            if(user != null)
+            {
+                return new UserInformationVM(user);
+            }
+            return null;
+        }
+
+        public UserLoginVM GetLoginVM(User user)
+        {
+            if(user != null)
+            {
+                return new UserLoginVM()
+                {
+                    Login = user.Login,
+                    PasswordHash = user.PasswordHash
+                };
+            }
+            return null;
+        }
+
+        public UserInformationVM GetUserInformationVM(UserLoginVM user)
+        {
+            if (user != null)
+            {
+                User dbUser = GetUser(user);
+                return GetUserInformationVM(dbUser);
+            }
             return null;
         }
     }

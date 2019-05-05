@@ -92,10 +92,15 @@ namespace Tests_server_app.Models
                 .HasOne(x => x.Achievement)
                 .WithMany(m => m.Users)
                 .HasForeignKey(x => x.AchievementId);
+
+            modelBuilder.Entity<Role>()
+                .HasMany(x => x.Users)
+                .WithOne(u => u.Role);
         }
 
-        public TestsDbContext (DbContextOptions<TestsDbContext> options): base(options)
+        public TestsDbContext(DbContextOptions<TestsDbContext> options) : base(options)
         {
+            
         }
     }
 }
