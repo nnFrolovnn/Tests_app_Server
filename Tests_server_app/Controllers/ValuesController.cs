@@ -23,12 +23,16 @@ namespace Tests_server_app.Controllers
         private readonly IJWTTokenGenerationService jWTTokenGenerationService;
 
 
-        [HttpGet("{id}")]
-        public ActionResult<Role> Get(int id)
+        [HttpGet("{id:int}")]
+        public ActionResult<User> Get(int id)
         {
-            return db.Roles.First();
+            return db.Users.First();
         }
-
+        [HttpGet("/user")]
+        public ActionResult<string> Get()
+        {
+            return User.Identity.Name;
+        }
         [HttpGet]
         [Route("/login")]
         public string Login()

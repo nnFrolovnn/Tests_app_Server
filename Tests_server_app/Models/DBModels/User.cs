@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Tests_server_app.Models.ViewModels;
 
 namespace Tests_server_app.Models.DBModels
 {
@@ -43,6 +44,47 @@ namespace Tests_server_app.Models.DBModels
         {
             Tests = new List<UserTest>();
             Achievements = new List<UserAchievement>();
+        }
+
+        public User(UserRegistrationVM user, Role role):this()
+        {
+            Login = user.Login;
+            PasswordHash = user.PasswordHash;
+            SignedUpWithAccount = SignedUpWith.Application;
+            FirstName = user.FirstName;
+            SecondName = user.SecondName;
+            BirthDate = user.BirthDate;
+            Email = user.Email;
+
+            RoleId = role.RoleId;
+            Role = role;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(obj == null)
+            {
+                return false;
+            }
+
+            if(obj == this)
+            {
+                return true;
+            }
+
+            User user = obj as User;
+
+            if (obj == null)
+            {
+                return false;
+            }
+
+            bool currEqual = FirstName == user.FirstName && SecondName == user.SecondName &&
+                             Login == user.Login && RoleId == user.RoleId && PasswordHash == user.PasswordHash &&
+                             BirthDate == user.BirthDate && Email == user.Email &&
+                             SignedUpWithAccount == user.SignedUpWithAccount;
+
+            return currEqual && base.Equals(obj);
         }
     }
 }

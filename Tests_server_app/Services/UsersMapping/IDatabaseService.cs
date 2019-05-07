@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,12 +8,15 @@ using Tests_server_app.Models.ViewModels;
 
 namespace Tests_server_app.Services.UsersMapping
 {
-    public interface IUsersMappingService
+    public interface IDatabaseService
     {
-        User GetUser(UserLoginVM userLoginVM);
+        User GetSignedUpUser(UserLoginVM userLoginVM);
+        User SignUpUser(UserRegistrationVM userRegistrationVM);
 
         UserLoginVM GetLoginVM(User user);
+
         UserInformationVM GetUserInformationVM(User user);
         UserInformationVM GetUserInformationVM(UserLoginVM user);
+        UserInformationVM GetUserInformationVM(HttpContext context);
     }
 }

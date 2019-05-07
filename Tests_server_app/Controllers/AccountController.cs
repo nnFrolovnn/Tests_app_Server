@@ -18,17 +18,15 @@ namespace Tests_server_app.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly TestsDbContext _context;
         private readonly IJWTTokenGenerationService _jWTTokenGenerationService;
-        private readonly IUsersMappingService _usersMappingService;
+        private readonly IDatabaseService _databaseService;
 
-        public AccountController(TestsDbContext testsDbContext, 
+        public AccountController(
                                  IJWTTokenGenerationService generationService,
-                                 IUsersMappingService usersMappingService)
+                                 IDatabaseService databaseService)
         {
-            _context = testsDbContext;
             _jWTTokenGenerationService = generationService;
-            _usersMappingService = usersMappingService;
+            _databaseService = databaseService;
         }
 
         #region Routed methods
@@ -37,7 +35,7 @@ namespace Tests_server_app.Controllers
         {
             if (ModelState.IsValid)
             {
-                var dbUser = _usersMappingService.GetUser(user);
+                var dbUser = _databaseService.GetSignedUpUser(user);
 
                 if(dbUser != null)
                 {
@@ -51,72 +49,31 @@ namespace Tests_server_app.Controllers
 
         public async Task<string> SignUp([FromBody] UserRegistrationVM user)
         {
-
-            if (ModelState.IsValid && !UserExists(user))
+            if (ModelState.IsValid)
             {
-                var role = _context.Roles.Single(x => x.Name == "User");
+                var dbUser = _databaseService.SignUpUser(user);
 
-                var dbUser = new User()
+                if (dbUser != null)
                 {
-                    FirstName = user.FirstName,
-                    SecondName = user.SecondName,
-                    BirthDate = user.BirthDate,
-
-                    PasswordHash = user.PasswordHash,
-                    Login = user.Login,
-                    SignedUpWithAccount = SignedUpWith.Application,
-                    RoleId = role.RoleId,
-                    Role = role
-                };
-
-                _context.Users.Add(dbUser);
-                _context.SaveChanges();
-
-                return AuthenticateUser(dbUser);
+                    return AuthenticateUser(dbUser);
+                }
             }
 
             HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
             return "";
         }
 
-        public async Task<UserInformationVM> Information()
+        public async Task<UserInformationVM> Info()
         {
-
-            // ....loading.....
-            // temp code
-            var user = _context.Users
-                            .Where(x => x.Login == User.Identity.Name)
-                            .Include(x => x.Achievements)
-                            .Include(x => x.Achievements.Select(a => a.Achievement))
-                            .Include(x => x.Achievements.Select(a => a.Achievement.Icon))
-                            .Include(x => x.Achievements.Select(a => a.Achievement.Theme))
-                            .Include(x => x.Tests)
-                            .Include(x => x.Tests.Select(t => t.Test))
-                            .Include(x => x.Tests.Select(t => t.Test.Questions))
-                            .Include(x => x.Tests.Select(t => t.Test.Questions.Select(q => q.Question)))
-                            .Include(x => x.Tests.Select(t => t.Test.Questions.Select(q => q.Question.Answers)))
-                            .Include(x => x.Tests.Select(t => t.Test.Questions.Select(q => q.Question.Answers.Select(a => a.Answer))))
-                            .Include(x => x.Tests.Select(t => t.Test.Themes))
-                            .Include(x => x.Tests.Select(t => t.Test.Themes.Select(s => s.Theme)))
-                            .FirstOrDefault();
-
-            return _usersMappingService.GetUserInformationVM(user);
+            return _databaseService.GetUserInformationVM(HttpContext);           
         }
 
         #endregion
-
 
         private string AuthenticateUser(User user)
         {
             var token = _jWTTokenGenerationService.GetToken(user);
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        private bool UserExists(UserRegistrationVM user)
-        {
-            return _context.Users.Any(e => 
-                        e.Login == user.Login && 
-                        e.Email == user.Email);
         }
     }
 }
