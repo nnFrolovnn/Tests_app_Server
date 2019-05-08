@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Tests_server_app.Models;
 using Tests_server_app.Models.DBModels;
 using Tests_server_app.Models.ViewModels;
@@ -52,17 +52,17 @@ namespace Tests_server_app.Services.DatabaseServ
 
         public User SignUpUser(UserRegistrationVM userRegistrationVM)
         {
-            var userExists = _context.Users.Any(x => 
+            var userExists = _context.Users.Any(x =>
                                 x.Login == userRegistrationVM.Login &&
                                 x.Email == userRegistrationVM.Email);
 
             if (!userExists)
             {
-                Role role = _context.Roles.First(x => 
-                                x.Name == "User" || 
+                Role role = _context.Roles.First(x =>
+                                x.Name == "User" ||
                                 x.Name == "user");
 
-                if(role != null)
+                if (role != null)
                 {
                     var user = new User(userRegistrationVM, role);
 
@@ -81,7 +81,7 @@ namespace Tests_server_app.Services.DatabaseServ
             var user = _context.Users.First(x =>
                                 x.Login == context.User.Identity.Name);
 
-            if(user != null)
+            if (user != null)
             {
                 return GetUserInformationVM(user);
             }
@@ -151,13 +151,13 @@ namespace Tests_server_app.Services.DatabaseServ
 
         public TestVM GetTest(string title)
         {
-            var test =_context.Tests
+            var test = _context.Tests
                             .Where(t => t.Title == title)
                             .Take(1);
 
             test = LoadTestsFields(test);
 
-            if(test != null)
+            if (test != null)
             {
                 return new TestVM(test.First());
             }
@@ -167,11 +167,11 @@ namespace Tests_server_app.Services.DatabaseServ
 
         public bool AddNewTest(TestVM testVM)
         {
-            if(testVM != null)
+            if (testVM != null)
             {
                 var test = new Test(testVM);
 
-                foreach(var theme in testVM.Themes)
+                foreach (var theme in testVM.Themes)
                 {
                     var dbTheme = _context.Themes.First(x => x.ThemeName == theme.ThemeName);
                     if (dbTheme != null)
@@ -226,7 +226,7 @@ namespace Tests_server_app.Services.DatabaseServ
 
         private IQueryable<Test> LoadTestsFields(IQueryable<Test> tests)
         {
-            if(tests == null)
+            if (tests == null)
             {
                 return null;
             }
@@ -271,6 +271,6 @@ namespace Tests_server_app.Services.DatabaseServ
             return TransformToVM(tests.ToList());
         }
 
-        
+
     }
 }

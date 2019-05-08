@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tests_server_app.Models.DBModels;
@@ -26,6 +27,9 @@ namespace Tests_server_app.Controllers
 
         #region Routed methods
 
+        [HttpPost]
+        [Authorize]
+        [Route("/api/[controller]/[action]")]
         public async Task<string> SignIn([FromBody] UserLoginVM user)
         {
             if (ModelState.IsValid)
@@ -42,6 +46,9 @@ namespace Tests_server_app.Controllers
             return "";
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("/api/[controller]/[action]")]
         public async Task<string> SignUp([FromBody] UserRegistrationVM user)
         {
             if (ModelState.IsValid)
@@ -58,6 +65,9 @@ namespace Tests_server_app.Controllers
             return "";
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("/api/[controller]/[action]")]
         public async Task<UserInformationVM> Info()
         {
             return _databaseService.GetUserInformationVM(HttpContext);           

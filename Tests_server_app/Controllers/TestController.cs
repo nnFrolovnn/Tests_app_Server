@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tests_server_app.Models.ViewModels;
 using Tests_server_app.Services.DatabaseServ;
@@ -18,6 +19,8 @@ namespace Tests_server_app.Controllers
             _databaseService = databaseService;
         }
 
+        [HttpGet]
+        [Route("/api/[controller]/[action]")]
         public async Task<ActionResult<List<TestVM>>> GetPage([FromQuery]int page, [FromQuery] string likes, [FromQuery] string theme)
         {
             if (likes != null && theme != null)
@@ -35,6 +38,8 @@ namespace Tests_server_app.Controllers
             return null;
         }
 
+        [HttpGet]
+        [Route("/api/[controller]/[action]")]
         public async Task<ActionResult<TestVM>> GetTest([FromQuery]string title)
         {
             var test = _databaseService.GetTest(title);
@@ -47,6 +52,9 @@ namespace Tests_server_app.Controllers
             return null;
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("/api/[controller]/[action]")]
         public async Task<bool> AddTest([FromBody] TestVM testVM)
         {
             if(ModelState.IsValid)
@@ -57,6 +65,9 @@ namespace Tests_server_app.Controllers
             return false;
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("/api/[controller]/[action]")]
         public async void LikeTest(string title)
         {
             if (title != null)
