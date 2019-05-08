@@ -1,10 +1,12 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
 using System.Threading.Tasks;
 using Tests_server_app.Models;
 using Tests_server_app.Models.DBModels;
@@ -48,7 +50,8 @@ namespace Tests_server_app.Services.Authentication
             var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name)
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name),
                 };
 
             ClaimsIdentity claimsIdentity =
@@ -58,5 +61,26 @@ namespace Tests_server_app.Services.Authentication
             return claimsIdentity;
         }
 
+        public IEnumerable<Claim> GetClaimsFromToken(string token)
+        {
+            TokenValidationParameters validationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuer = true,
+                ValidIssuer = authOptions.Issuer,
+
+                ValidateAudience = true,
+                ValidAudience = authOptions.Audience,
+
+                ValidateLifetime = true,
+
+                IssuerSigningKey = authOptions.GetSymmetricSecurityKey(),
+                ValidateIssuerSigningKey = true,
+            };
+
+            ClaimsPrincipal principal = new JwtSecurityTokenHandler()
+                .ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+            return principal.Claims;
+        }
     }
 }

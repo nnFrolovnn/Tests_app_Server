@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Tests_server_app.Services.Authentication;
-using Tests_server_app.Services.UsersMapping;
+using Tests_server_app.Services.DatabaseServ;
 
 namespace Tests_server_app.Extensions
 {
@@ -27,11 +30,49 @@ namespace Tests_server_app.Extensions
                             ValidAudience = authOptions.Audience,
 
                             ValidateLifetime = true,
-                            
+
                             IssuerSigningKey = authOptions.GetSymmetricSecurityKey(),
                             ValidateIssuerSigningKey = true,
                         };
+
+                       /* options.Events = new JwtBearerEvents()
+                        {
+                            OnTokenValidated = context =>
+                            {
+                                if (context.SecurityToken is JwtSecurityToken accessToken)
+                                {
+                                    if (context.HttpContext.User.Identity is ClaimsIdentity identity)
+                                    {
+                                        identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                                    }
+                                }
+
+                                return Task.CompletedTask;
+                            }
+                        };*/
                     });
+
+            return services;
+        }
+
+        // TODO
+        public static IServiceCollection AddRolesAuthorization(this IServiceCollection services)
+        {
+            services.AddTransient<IAuthorizationHandler, RoleHandler>();
+
+            services.AddAuthorization(o =>
+            {
+                o.AddPolicy("User", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new RoleRequirement("User"));
+                });
+                o.AddPolicy("Admin", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new RoleRequirement("Admin"));
+                });
+            });
 
             return services;
         }

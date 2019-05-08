@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Tests_server_app.Models.DBModels;
 using Tests_server_app.Models.ViewModels;
 using Tests_server_app.Services.Authentication;
-using Tests_server_app.Services.UsersMapping;
+using Tests_server_app.Services.DatabaseServ;
 
 namespace Tests_server_app.Controllers
 {

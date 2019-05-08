@@ -9,7 +9,7 @@ using Tests_server_app.Models;
 using Tests_server_app.Models.DBModels;
 using Tests_server_app.Models.ViewModels;
 
-namespace Tests_server_app.Services.UsersMapping
+namespace Tests_server_app.Services.DatabaseServ
 {
     public class DatabaseService : IDatabaseService
     {
@@ -192,6 +192,12 @@ namespace Tests_server_app.Services.UsersMapping
             }
 
             return false;
+        }
+
+        public void LikeTest(string title)
+        {
+            _context.Tests.First(x => x.Title == title).LikesCount++;
+            _context.SaveChanges();
         }
 
         #endregion

@@ -15,6 +15,9 @@ using Tests_server_app.Services.Authentication;
 
 namespace Tests_server_app.Controllers
 {
+    /// <summary>
+    /// only for testing app)
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
@@ -24,14 +27,15 @@ namespace Tests_server_app.Controllers
 
 
         [HttpGet("{id:int}")]
-        public ActionResult<Role> Get(int id)
+        [Authorize(Policy = "User")]
+        public ActionResult<string> Get(int id)
         {
             var r = db.Roles.First();
             var u = r.Users;
-            return r;
+            return r.Name;
         }
 
-        [HttpGet("/user")]
+        [HttpGet("/user")]    
         public ActionResult<string> Get()
         {
             return User.Identity.Name;

@@ -38,6 +38,9 @@ namespace Tests_server_app
             services.AddSingleton(typeof(IJWTBearerAuthOptions), authOptions);
             services.AddJWTTokenGenerationService();
 
+            // authorization
+            services.AddRolesAuthorization();
+
             // users helpers
             services.AddDatabaseService();
 

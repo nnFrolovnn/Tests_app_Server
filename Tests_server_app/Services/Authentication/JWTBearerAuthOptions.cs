@@ -15,7 +15,7 @@ namespace Tests_server_app.Services.Authentication
 
         public SymmetricSecurityKey GetSymmetricSecurityKey()
         {
-            return new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Key));
+            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
         }
 
         public static JWTBearerAuthOptions LoadJsonOptions(string path)

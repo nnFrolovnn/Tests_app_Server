@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Tests_server_app.Models.DBModels;
 using Tests_server_app.Models.ViewModels;
 
-namespace Tests_server_app.Services.UsersMapping
+namespace Tests_server_app.Services.DatabaseServ
 {
     public interface IDatabaseService
     {
@@ -26,5 +26,6 @@ namespace Tests_server_app.Services.UsersMapping
 
         TestVM GetTest(string title);
         bool AddNewTest(TestVM testVM);
+        void LikeTest(string title);
     }
 }

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tests_server_app.Models.ViewModels;
-using Tests_server_app.Services.UsersMapping;
+using Tests_server_app.Services.DatabaseServ;
 
 namespace Tests_server_app.Controllers
 {
@@ -55,6 +55,14 @@ namespace Tests_server_app.Controllers
             }
 
             return false;
+        }
+
+        public async void LikeTest(string title)
+        {
+            if (title != null)
+            {
+                _databaseService.LikeTest(title);
+            }
         }
     }
 }
