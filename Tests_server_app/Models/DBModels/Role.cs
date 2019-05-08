@@ -20,7 +20,7 @@ namespace Tests_server_app.Models.DBModels
 
         public RolesPermissions Permissions { get; set; }
 
-        public virtual List<User> Users { get; set; }
+        public virtual ICollection<User> Users { get; set; }
 
         public Role()
         {

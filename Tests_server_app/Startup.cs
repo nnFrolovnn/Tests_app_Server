@@ -39,7 +39,7 @@ namespace Tests_server_app
             services.AddJWTTokenGenerationService();
 
             // users helpers
-            services.AddUsersMappingService();
+            services.AddDatabaseService();
 
             // configure db
             var connectionString = Configuration.GetConnectionString("CW_Task_Core");

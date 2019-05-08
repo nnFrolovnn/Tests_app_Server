@@ -28,6 +28,26 @@ namespace Tests_server_app.Models.ViewModels
             }    
         }
 
+        public TestVM(Test test)
+        {
+            LikesCount = test.LikesCount;
+            Title = test.Title;
+            Description = test.Description;
+            PassedDate = DateTime.MinValue;
+            RightQnswers = -1;
+
+            Questions = new List<QuestionVM>();
+            foreach (var q in test.Questions)
+            {
+                Questions.Add(new QuestionVM(q));
+            }
+
+            Themes = new List<ThemeVM>();
+            foreach (var t in test.Themes)
+            {
+                Themes.Add(new ThemeVM(t));
+            }
+        }
 
         public ulong? LikesCount { get; set; }
         public string Title { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Tests_server_app.Models.ViewModels;
 
 namespace Tests_server_app.Models.DBModels
 {
@@ -16,6 +17,12 @@ namespace Tests_server_app.Models.DBModels
         public Answer()
         {
             Questions = new List<QuestionAnswer>();
+        }
+
+        public Answer(QuestionAnswer questionAnswer, AnswerVM a):this()
+        {
+            AnswerText = a.AnswerText;
+            Questions.Add(questionAnswer);
         }
     }
 }

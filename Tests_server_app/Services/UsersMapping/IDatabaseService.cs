@@ -18,5 +18,13 @@ namespace Tests_server_app.Services.UsersMapping
         UserInformationVM GetUserInformationVM(User user);
         UserInformationVM GetUserInformationVM(UserLoginVM user);
         UserInformationVM GetUserInformationVM(HttpContext context);
+
+        List<TestVM> GetTests(int from, int count);
+        List<TestVM> GetTestsByTheme(int from, int count, string theme);
+        List<TestVM> GetTestsOrderedByLikes(int from, int count);
+        List<TestVM> GetTestsOrderedByLikes(int from, int count, string theme);
+
+        TestVM GetTest(string title);
+        bool AddNewTest(TestVM testVM);
     }
 }

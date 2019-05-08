@@ -42,7 +42,7 @@ namespace Tests_server_app.Extensions
             return services;
         }
 
-        public static IServiceCollection AddUsersMappingService(this IServiceCollection services)
+        public static IServiceCollection AddDatabaseService(this IServiceCollection services)
         {
             services.AddScoped<IDatabaseService, DatabaseService>();
             return services;

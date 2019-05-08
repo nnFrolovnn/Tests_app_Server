@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Tests_server_app.Models.ViewModels;
 
 namespace Tests_server_app.Models.DBModels
 {
@@ -20,6 +21,19 @@ namespace Tests_server_app.Models.DBModels
         {
             Tests = new List<TestQuestion>();
             Answers = new List<QuestionAnswer>();
+        }
+
+        public Question(TestQuestion testQuestion, QuestionVM q):this()
+        {
+            foreach(var a in q.Answers)
+            {
+                Answers.Add(new QuestionAnswer(this, a));
+            }
+
+            Weightiness = 1;
+            QuestionText = q.QuestionText;
+
+            Tests.Add(testQuestion);
         }
     }
 }

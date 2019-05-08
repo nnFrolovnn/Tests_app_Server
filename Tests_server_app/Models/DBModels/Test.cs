@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Tests_server_app.Models.ViewModels;
 
 namespace Tests_server_app.Models.DBModels
 {
@@ -32,6 +33,20 @@ namespace Tests_server_app.Models.DBModels
             Questions = new List<TestQuestion>();
             Themes = new List<TestTheme>();
             Users = new List<UserTest>();
+        }
+        
+        /// <summary>
+        /// create test without themes
+        /// </summary>
+        /// <param name="testVM"> model of test </param>
+        public Test(TestVM testVM):this()
+        {
+            CreationDate = DateTime.Now.Date;
+
+            foreach(var q in testVM.Questions)
+            {
+                Questions.Add(new TestQuestion(this, q));
+            }
         }
     }
 }

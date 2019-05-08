@@ -21,5 +21,10 @@ namespace Tests_server_app.Models.DBModels
             Tests = new List<TestTheme>();
             Achievements = new List<Achievement>();
         }
+
+        public Theme(string themeName):this()
+        {
+            ThemeName = themeName;
+        }
     }
 }

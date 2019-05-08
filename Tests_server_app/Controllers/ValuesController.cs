@@ -24,10 +24,13 @@ namespace Tests_server_app.Controllers
 
 
         [HttpGet("{id:int}")]
-        public ActionResult<User> Get(int id)
+        public ActionResult<Role> Get(int id)
         {
-            return db.Users.First();
+            var r = db.Roles.First();
+            var u = r.Users;
+            return r;
         }
+
         [HttpGet("/user")]
         public ActionResult<string> Get()
         {
