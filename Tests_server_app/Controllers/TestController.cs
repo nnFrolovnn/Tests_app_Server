@@ -7,7 +7,7 @@ using Tests_server_app.Services.DatabaseServ;
 
 namespace Tests_server_app.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/api/[controller]/[action]")]
     [ApiController]
     public class TestController : ControllerBase
     {
@@ -19,8 +19,7 @@ namespace Tests_server_app.Controllers
             _databaseService = databaseService;
         }
 
-        [HttpGet]
-        [Route("/api/[controller]/[action]")]
+        [HttpGet]       
         public async Task<ActionResult<List<TestVM>>> GetPage([FromQuery]int page, [FromQuery] string likes, [FromQuery] string theme)
         {
             if (likes != null && theme != null)
@@ -35,11 +34,11 @@ namespace Tests_server_app.Controllers
             {
                 return _databaseService.GetTestsByTheme(page * showCount, showCount, theme);
             }
+
             return null;
         }
 
         [HttpGet]
-        [Route("/api/[controller]/[action]")]
         public async Task<ActionResult<TestVM>> GetTest([FromQuery]string title)
         {
             var test = _databaseService.GetTest(title);
@@ -52,10 +51,22 @@ namespace Tests_server_app.Controllers
             return null;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<TestVM>>> GetAll()
+        {
+            var test = _databaseService.GetTests();
+
+            if (test != null)
+            {
+                return test;
+            }
+
+            return null;
+        }
+
         [HttpPost]
         [Authorize]
-        [Route("/api/[controller]/[action]")]
-        public async Task<bool> AddTest([FromBody] TestVM testVM)
+        public async Task<bool> Add([FromBody] TestVM testVM)
         {
             if(ModelState.IsValid)
             {
@@ -67,7 +78,6 @@ namespace Tests_server_app.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/api/[controller]/[action]")]
         public async void LikeTest(string title)
         {
             if (title != null)

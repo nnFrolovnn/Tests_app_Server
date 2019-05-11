@@ -10,5 +10,10 @@ namespace Tests_server_app.Models.ViewModels
         {
             ThemeName = t.Theme?.ThemeName;
         }
+
+        public ThemeVM(Theme theme)
+        {
+            ThemeName = theme?.ThemeName;
+        }
     }
 }

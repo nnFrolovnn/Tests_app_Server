@@ -20,7 +20,7 @@ namespace Tests_server_app.Services.DatabaseServ
             _context = context;
         }
 
-
+        #region User
 
         public UserLoginVM GetLoginVM(User user)
         {
@@ -33,10 +33,7 @@ namespace Tests_server_app.Services.DatabaseServ
                 };
             }
             return null;
-        }
-
-
-        #region User
+        } 
 
         public User GetSignedUpUser(UserLoginVM userLoginVM)
         {
@@ -76,10 +73,10 @@ namespace Tests_server_app.Services.DatabaseServ
             return null;
         }
 
-        public UserInformationVM GetUserInformationVM(HttpContext context)
+        public UserInformationVM GetUserInformationVM(string name)
         {
             var user = _context.Users.First(x =>
-                                x.Login == context.User.Identity.Name);
+                                x.Login == name);
 
             if (user != null)
             {
@@ -87,6 +84,23 @@ namespace Tests_server_app.Services.DatabaseServ
             }
 
             return null;
+        }
+
+        public List<TestVM> GetUserTests(string name)
+        {
+            var userTests = _context.Users
+                            .Include(x => x.Tests)
+                            .Include(x => x.Tests.Select(t => t.Test))
+                            .First(x =>
+                                x.Login == name);
+
+            var tests = new List<TestVM>();
+            foreach(var test in userTests.Tests)
+            {
+                tests.Add(new TestVM(test));
+            }
+
+            return tests;
         }
 
         public UserInformationVM GetUserInformationVM(UserLoginVM user)
@@ -109,6 +123,7 @@ namespace Tests_server_app.Services.DatabaseServ
             }
             return null;
         }
+
         #endregion
 
         #region Test
@@ -121,7 +136,7 @@ namespace Tests_server_app.Services.DatabaseServ
 
             tests = LoadTestsFields(tests);
 
-            return TransformToVM(tests.ToList());
+            return tests == null ? null : TransformToVM(tests.ToList());
         }
 
         public List<TestVM> GetTestsByTheme(int from, int count, string theme)
@@ -133,7 +148,7 @@ namespace Tests_server_app.Services.DatabaseServ
 
             tests = LoadTestsFields(tests);
 
-            return TransformToVM(tests.ToList());
+            return tests == null ? null : TransformToVM(tests.ToList());
         }
 
         public List<TestVM> GetTestsOrderedByLikes(int from, int count)
@@ -145,9 +160,30 @@ namespace Tests_server_app.Services.DatabaseServ
 
             tests = LoadTestsFields(tests);
 
-            return TransformToVM(tests.ToList());
+            return tests == null ? null : TransformToVM(tests.ToList());
         }
 
+        public List<TestVM> GetTestsOrderedByLikes(int from, int count, string theme)
+        {
+            var tests = _context.Tests
+                            .Where(t => t.Themes.Any(th => th.Theme.ThemeName == theme))
+                            .OrderBy(t => t.LikesCount)
+                            .Skip(from)
+                            .Take(count);
+
+            tests = LoadTestsFields(tests);
+            return tests == null ? null : TransformToVM(tests.ToList());
+        }
+
+        public List<TestVM> GetTests()
+        {
+            var tests = _context.Tests
+                                .AsQueryable();
+
+            tests = LoadTestsFields(tests);
+
+            return tests == null? null : TransformToVM(tests.ToList());
+        }
 
         public TestVM GetTest(string title)
         {
@@ -157,7 +193,7 @@ namespace Tests_server_app.Services.DatabaseServ
 
             test = LoadTestsFields(test);
 
-            if (test != null)
+            if (test != null && test.Count() > 0)
             {
                 return new TestVM(test.First());
             }
@@ -196,8 +232,79 @@ namespace Tests_server_app.Services.DatabaseServ
 
         public void LikeTest(string title)
         {
-            _context.Tests.First(x => x.Title == title).LikesCount++;
+            _context.Tests
+                    .First(x => x.Title == title).LikesCount++;
+
             _context.SaveChanges();
+        }
+
+        public List<TestVM> GetTestsByTheme(string theme)
+        {
+            var tests = _context.Tests
+                            .Where(t => t.Themes.Any(th => th.Theme.ThemeName == theme))
+                            .AsQueryable();
+
+            tests = LoadTestsFields(tests);
+
+            return tests == null ? null : TransformToVM(tests.ToList());
+        }
+
+        public List<TestVM> GetTestsOrderedByLikes(string theme)
+        {
+            var tests = _context.Tests
+                            .Where(t => t.Themes.Any(th => th.Theme.ThemeName == theme))
+                            .OrderBy(t => t.LikesCount).AsQueryable();
+
+            tests = LoadTestsFields(tests);
+            return tests == null ? null : TransformToVM(tests.ToList());
+        }
+
+        #endregion
+
+        #region Theme
+
+        public List<ThemeVM> GetAllThemes()
+        {
+            var themesDb = _context.Themes?.ToList();
+
+            var themesVM = new List<ThemeVM>();
+
+            foreach(var theme in themesDb)
+            {
+                themesVM.Add(new ThemeVM(theme));
+            }
+
+            return themesVM;
+        }
+
+        public bool AddTheme(string themeName)
+        {
+            var theme = _context.Themes
+                                .First(x => x.ThemeName == themeName);
+            if(theme == null)
+            {
+                _context.Themes.Add(new Theme(themeName));
+                _context.SaveChanges();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool DeleteTheme(string themeName)
+        {
+            var theme = _context.Themes
+                                .First(x => x.ThemeName == themeName);
+            if (theme == null)
+            {
+                _context.Themes.Remove(theme);
+                _context.SaveChanges();
+
+                return true;
+            }
+
+            return false;
         }
 
         #endregion
@@ -257,20 +364,5 @@ namespace Tests_server_app.Services.DatabaseServ
 
             return testvms;
         }
-
-        public List<TestVM> GetTestsOrderedByLikes(int from, int count, string theme)
-        {
-            var tests = _context.Tests
-                            .Where(t => t.Themes.Any(th => th.Theme.ThemeName == theme))
-                            .OrderBy(t => t.LikesCount)
-                            .Skip(from)
-                            .Take(count);
-
-            tests = LoadTestsFields(tests);
-
-            return TransformToVM(tests.ToList());
-        }
-
-
     }
 }

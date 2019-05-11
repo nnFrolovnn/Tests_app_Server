@@ -1,4 +1,6 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +12,7 @@ using Tests_server_app.Services.DatabaseServ;
 
 namespace Tests_server_app.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -29,7 +31,6 @@ namespace Tests_server_app.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/api/[controller]/[action]")]
         public async Task<string> SignIn([FromBody] UserLoginVM user)
         {
             if (ModelState.IsValid)
@@ -48,7 +49,6 @@ namespace Tests_server_app.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/api/[controller]/[action]")]
         public async Task<string> SignUp([FromBody] UserRegistrationVM user)
         {
             if (ModelState.IsValid)
@@ -67,10 +67,21 @@ namespace Tests_server_app.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/api/[controller]/[action]")]
         public async Task<UserInformationVM> Info()
         {
-            return _databaseService.GetUserInformationVM(HttpContext);           
+            return _databaseService.GetUserInformationVM(HttpContext.User.Identity.Name);           
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<List<TestVM>>> GetUserTests()
+        {
+            return _databaseService.GetUserTests(HttpContext.User.Identity.Name);
+        }
+
+        public async Task<ActionResult<bool>> TestPassed([FromBody] TestVM testVM)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
