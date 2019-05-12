@@ -79,9 +79,9 @@ namespace Tests_server_app.Controllers
             return _databaseService.GetUserTests(HttpContext.User.Identity.Name);
         }
 
-        public async Task<ActionResult<bool>> TestPassed([FromBody] TestVM testVM)
+        public async Task<ActionResult<bool>> TestPassed([FromQuery] string title, [FromQuery] int countRightAnswers)
         {
-            throw new NotImplementedException();
+            return _databaseService.AddPassedTestToUser(title, HttpContext.User.Identity.Name, countRightAnswers);
         }
 
         #endregion

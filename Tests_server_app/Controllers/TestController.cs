@@ -76,7 +76,7 @@ namespace Tests_server_app.Controllers
             return false;
         }
 
-        [HttpPost]
+        [HttpPut]
         [Authorize]
         public async void LikeTest(string title)
         {
@@ -84,6 +84,17 @@ namespace Tests_server_app.Controllers
             {
                 _databaseService.LikeTest(title);
             }
+        }
+
+        [HttpDelete]
+        [Authorize(Policy = "Admin")]
+        public async Task<bool> Delete([FromQuery] string title)
+        {
+            if(title != null)
+            {
+                return _databaseService.DeleteTest(title);
+            }
+            return false;
         }
     }
 }

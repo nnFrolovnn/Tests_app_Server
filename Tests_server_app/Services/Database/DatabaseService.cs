@@ -124,6 +124,38 @@ namespace Tests_server_app.Services.DatabaseServ
             return null;
         }
 
+        public bool AddPassedTestToUser(string title, string userName, int countRightAnswers)
+        {
+            var user = _context.Users.First(x => x.Login == userName);
+            if (user != null)
+            {
+                var test = _context.Tests
+                                   .Include(x => x.Questions)
+                                   .First(x => x.Title == title);
+
+                if (test != null)
+                {
+                    user.Tests.Add(new UserTest()
+                    {
+                        Test = test,
+                        TestId = test.TestId,
+                        User = user,
+                        UserId = user.UserId,
+                        DatePassed = DateTime.Now.Date,
+                        CountRightAnswers = countRightAnswers,
+                        CountAnsweredQuestions = test.Questions.Count
+                    });
+
+                    _context.Entry(user).State = EntityState.Modified;
+                    _context.SaveChanges();
+                    return true;
+
+                }
+            }
+
+            return false;
+        }
+
         #endregion
 
         #region Test
@@ -363,6 +395,21 @@ namespace Tests_server_app.Services.DatabaseServ
             }
 
             return testvms;
+        }
+
+        public bool DeleteTest(string title)
+        {
+            var test = _context.Tests.First(x => x.Title == title);
+            
+            if(test != null)
+            {
+                _context.Tests.Remove(test);
+                _context.SaveChanges();
+
+                return true;
+            }
+
+            return false;
         }
     }
 }
