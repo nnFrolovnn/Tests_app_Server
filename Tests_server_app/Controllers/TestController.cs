@@ -64,6 +64,24 @@ namespace Tests_server_app.Controllers
             return null;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<TestVM>>> GetAllByLikes()
+        {
+            var test = _databaseService.GetTestsOrderedByLikes();
+            return null;
+        }
+
+        [HttpPut]
+        [Authorize(Policy = "Admin")]
+        public async Task<bool> Edit([FromBody] EditedTestVM editedTest)
+        {
+            if(ModelState.IsValid)
+            {
+                return _databaseService.EditTest(editedTest);
+            }
+
+            return false;
+        }
         [HttpPost]
         [Authorize]
         public async Task<bool> Add([FromBody] TestVM testVM)

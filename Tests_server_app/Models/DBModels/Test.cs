@@ -42,6 +42,10 @@ namespace Tests_server_app.Models.DBModels
         public Test(TestVM testVM):this()
         {
             CreationDate = DateTime.Now.Date;
+            Checked = false;
+            LikesCount = 0;
+            Title = testVM.Title;
+            Description = testVM.Description;
 
             foreach(var q in testVM.Questions)
             {

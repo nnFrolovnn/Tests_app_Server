@@ -53,11 +53,31 @@ namespace Tests_server_app.Models.DBModels
             SignedUpWithAccount = SignedUpWith.Application;
             FirstName = user.FirstName;
             SecondName = user.SecondName;
-            BirthDate = user.BirthDate;
             Email = user.Email;
-
             RoleId = role.RoleId;
             Role = role;
+
+            //parse date
+            var dateParts = user.BirthDate.Split('.', '-');
+            if (dateParts.Count() == 3)
+            {
+                var dateInts = new List<int>();
+
+                foreach(var s in dateParts)
+                {
+                    if(int.TryParse(s, out int res))
+                    {
+                        dateInts.Add(res);
+                    }
+                    else
+                    {
+                        BirthDate = DateTime.Today;
+                        return;
+                    }
+                }
+
+                BirthDate = new DateTime(dateInts[2], dateInts[1], dateInts[0]);            
+            }
         }
 
         public override bool Equals(object obj)

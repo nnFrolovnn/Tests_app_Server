@@ -15,9 +15,11 @@ namespace Tests_server_app.Services.Database
         UserLoginVM GetLoginVM(User user);
         UserInformationVM GetUserInformationVM(User user);
         UserInformationVM GetUserInformationVM(UserLoginVM user);
-        UserInformationVM GetUserInformationVM(string name);
-        List<TestVM> GetUserTests(string name);
-
-        bool AddPassedTestToUser(string title, string userName, int countRightAnswers);
+        UserInformationVM GetUserInformationVM(string login);
+        List<TestVM> GetUserTests(string login);
+        
+        User EditUser(string login, EditedUserVM editedUser);
+        
+        bool AddPassedTestToUser(string title, string login, int countRightAnswers, int questionsNumber);
     }
 }

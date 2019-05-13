@@ -69,7 +69,11 @@ namespace Tests_server_app
                 app.UseHsts();
             }
 
-            app.UseCors(builder => builder.AllowAnyOrigin());
+            app.UseCors(builder => builder.AllowAnyOrigin()
+                                          .AllowCredentials()
+                                          .AllowAnyHeader()
+                                          .AllowAnyMethod());
+
             app.UseStaticFiles();
 
             // app.UseHttpsRedirection();

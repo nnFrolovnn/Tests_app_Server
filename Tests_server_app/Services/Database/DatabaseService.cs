@@ -39,9 +39,11 @@ namespace Tests_server_app.Services.DatabaseServ
         {
             if (userLoginVM != null)
             {
-                return _context.Users.First(x =>
-                            x.Login == userLoginVM.Login &&
-                            x.PasswordHash == userLoginVM.PasswordHash);
+                return _context.Users
+                            .Include(r => r.Role)
+                            .FirstOrDefault(x =>
+                                x.Login == userLoginVM.Login &&
+                                x.PasswordHash == userLoginVM.PasswordHash);
             }
 
             return null;
@@ -55,28 +57,36 @@ namespace Tests_server_app.Services.DatabaseServ
 
             if (!userExists)
             {
-                Role role = _context.Roles.First(x =>
+                Role role = _context.Roles.FirstOrDefault(x =>
                                 x.Name == "User" ||
                                 x.Name == "user");
 
-                if (role != null)
+                if (role == null)
                 {
-                    var user = new User(userRegistrationVM, role);
-
-                    _context.Users.Add(user);
+                    role = new Role()
+                    {
+                        Name = "user",
+                        Permissions = RolesPermissions.All
+                    };
+                    _context.Roles.Add(role);
                     _context.SaveChanges();
-
-                    return user;
                 }
+
+                var user = new User(userRegistrationVM, role);
+
+                _context.Users.Add(user);
+                _context.SaveChanges();
+
+                return user;
             }
 
             return null;
         }
 
-        public UserInformationVM GetUserInformationVM(string name)
+        public UserInformationVM GetUserInformationVM(string login)
         {
             var user = _context.Users.First(x =>
-                                x.Login == name);
+                                x.Login == login);
 
             if (user != null)
             {
@@ -86,21 +96,25 @@ namespace Tests_server_app.Services.DatabaseServ
             return null;
         }
 
-        public List<TestVM> GetUserTests(string name)
+        public List<TestVM> GetUserTests(string login)
         {
             var userTests = _context.Users
                             .Include(x => x.Tests)
                             .Include(x => x.Tests.Select(t => t.Test))
-                            .First(x =>
-                                x.Login == name);
-
-            var tests = new List<TestVM>();
-            foreach(var test in userTests.Tests)
+                            .FirstOrDefault(x =>
+                                x.Login == login);
+            if (userTests != null)
             {
-                tests.Add(new TestVM(test));
+                var tests = new List<TestVM>();
+                foreach (var test in userTests.Tests)
+                {
+                    tests.Add(new TestVM(test));
+                }
+
+                return tests;
             }
 
-            return tests;
+            return null;
         }
 
         public UserInformationVM GetUserInformationVM(UserLoginVM user)
@@ -124,14 +138,14 @@ namespace Tests_server_app.Services.DatabaseServ
             return null;
         }
 
-        public bool AddPassedTestToUser(string title, string userName, int countRightAnswers)
+        public bool AddPassedTestToUser(string title, string login, int countRightAnswers, int questionsNumber)
         {
-            var user = _context.Users.First(x => x.Login == userName);
+            var user = _context.Users.FirstOrDefault(x => x.Login == login);
             if (user != null)
             {
                 var test = _context.Tests
                                    .Include(x => x.Questions)
-                                   .First(x => x.Title == title);
+                                   .FirstOrDefault(x => x.Title == title);
 
                 if (test != null)
                 {
@@ -143,7 +157,7 @@ namespace Tests_server_app.Services.DatabaseServ
                         UserId = user.UserId,
                         DatePassed = DateTime.Now.Date,
                         CountRightAnswers = countRightAnswers,
-                        CountAnsweredQuestions = test.Questions.Count
+                        CountAnsweredQuestions = questionsNumber
                     });
 
                     _context.Entry(user).State = EntityState.Modified;
@@ -154,6 +168,28 @@ namespace Tests_server_app.Services.DatabaseServ
             }
 
             return false;
+        }
+
+        public User EditUser(string login, EditedUserVM editedUser)
+        {
+            if(login != null && editedUser != null)
+            {
+                var user = _context.Users.Include(r => r.Role).FirstOrDefault(x => x.Login == login);
+
+                if(user != null)
+                {
+                    user.Login = editedUser.Login ?? user.Login;
+                    user.PasswordHash = editedUser.PasswordHash ?? user.PasswordHash;
+                    user.Email = editedUser.Email ?? user.Email;
+                }
+
+                _context.Entry(user).State = EntityState.Modified;
+                _context.SaveChanges();
+
+                return user;
+            }
+
+            return null;
         }
 
         #endregion
@@ -225,9 +261,9 @@ namespace Tests_server_app.Services.DatabaseServ
 
             test = LoadTestsFields(test);
 
-            if (test != null && test.Count() > 0)
+            if (test != null)
             {
-                return new TestVM(test.First());
+                return new TestVM(test.FirstOrDefault());
             }
 
             return null;
@@ -241,7 +277,8 @@ namespace Tests_server_app.Services.DatabaseServ
 
                 foreach (var theme in testVM.Themes)
                 {
-                    var dbTheme = _context.Themes.First(x => x.ThemeName == theme.ThemeName);
+                    var dbTheme = _context.Themes
+                                          .FirstOrDefault(x => x.ThemeName == theme.ThemeName);
                     if (dbTheme != null)
                     {
                         test.Themes.Add(new TestTheme(test, dbTheme));
@@ -264,10 +301,18 @@ namespace Tests_server_app.Services.DatabaseServ
 
         public void LikeTest(string title)
         {
-            _context.Tests
-                    .First(x => x.Title == title).LikesCount++;
+            if (title != null)
+            {
+                var test = _context.Tests
+                                   .FirstOrDefault(x => x.Title == title);
+                if (test != null)
+                {
+                    test.LikesCount++;
 
-            _context.SaveChanges();
+                    _context.Entry(test).State = EntityState.Modified;
+                    _context.SaveChanges();
+                }
+            }
         }
 
         public List<TestVM> GetTestsByTheme(string theme)
@@ -285,10 +330,29 @@ namespace Tests_server_app.Services.DatabaseServ
         {
             var tests = _context.Tests
                             .Where(t => t.Themes.Any(th => th.Theme.ThemeName == theme))
-                            .OrderBy(t => t.LikesCount).AsQueryable();
+                            .OrderBy(t => t.LikesCount)
+                            .AsQueryable();
 
             tests = LoadTestsFields(tests);
             return tests == null ? null : TransformToVM(tests.ToList());
+        }
+
+        public List<TestVM> GetTestsOrderedByLikes()
+        {
+            return GetTests().OrderBy(x => x.LikesCount).ToList();
+        }
+
+        public bool EditTest(EditedTestVM editedTest)
+        {
+            if (editedTest != null)
+            {
+                if (DeleteTest(editedTest.OldName))
+                {
+                    return AddNewTest(editedTest.NewTest);
+                }
+            }
+
+            return false;
         }
 
         #endregion
@@ -312,7 +376,7 @@ namespace Tests_server_app.Services.DatabaseServ
         public bool AddTheme(string themeName)
         {
             var theme = _context.Themes
-                                .First(x => x.ThemeName == themeName);
+                                .FirstOrDefault(x => x.ThemeName == themeName);
             if(theme == null)
             {
                 _context.Themes.Add(new Theme(themeName));
@@ -327,13 +391,86 @@ namespace Tests_server_app.Services.DatabaseServ
         public bool DeleteTheme(string themeName)
         {
             var theme = _context.Themes
-                                .First(x => x.ThemeName == themeName);
-            if (theme == null)
+                                .FirstOrDefault(x => x.ThemeName == themeName);
+            if (theme != null)
             {
                 _context.Themes.Remove(theme);
                 _context.SaveChanges();
 
                 return true;
+            }
+
+            return false;
+        }
+
+        public bool SetThemesToTest(ThemeVM[] themes, string title)
+        {
+            if (themes != null && title != null)
+            {
+                var test = _context.Tests
+                                   .Include(x => x.Themes)
+                                   .Include(x => x.Themes.Select(t => t.Theme))
+                                   .FirstOrDefault(x => x.Title == title);
+
+                foreach (var theme in themes)
+                {
+                    if (!test.Themes.Any(x => x.Theme.ThemeName == theme.ThemeName))
+                    {
+                        var themeDB = _context.Themes
+                                        .FirstOrDefault(t => t.ThemeName == theme.ThemeName);
+                        if (themeDB == null)
+                        {
+                            themeDB = new Theme(theme.ThemeName);
+                        }
+
+                        test.Themes.Add(new TestTheme()
+                        {
+                            Test = test,
+                            Theme = themeDB
+                        });
+                    }
+                }
+
+                _context.Entry(test).State = EntityState.Modified;
+                _context.SaveChanges();
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
+
+        #region Role
+
+        public List<RoleVM> GetAllRoles()
+        {
+            var roles = _context.Roles.ToList();
+            var roleVms = new List<RoleVM>();
+
+            foreach(var role in roles)
+            {
+                roleVms.Add(new RoleVM(role));
+            }
+
+            return roleVms;
+        }
+
+        public bool SetRoleToUser(string login, string roleName)
+        {
+            if(login != null && roleName != null)
+            {
+                var role = _context.Roles.FirstOrDefault(x => x.Name == roleName);
+                var user = _context.Users
+                                   .Include(r => r.Role)
+                                   .FirstOrDefault(x => x.Login == login);
+
+                if(user != null && role != null)
+                {
+                    user.Role = role;
+
+                    _context.SaveChanges();
+                }
             }
 
             return false;
@@ -399,11 +536,31 @@ namespace Tests_server_app.Services.DatabaseServ
 
         public bool DeleteTest(string title)
         {
-            var test = _context.Tests.First(x => x.Title == title);
+            var test = _context.Tests
+                               .FirstOrDefault(x => x.Title == title);
             
             if(test != null)
             {
                 _context.Tests.Remove(test);
+                _context.SaveChanges();
+
+                return true;
+            }
+
+            return false;
+        }
+
+          
+
+        public bool AddRole(string roleName)
+        {
+            var role = _context.Roles.FirstOrDefault(x => x.Name == roleName);
+
+            if(role == null)
+            {
+                role = new Role() { Name = roleName};
+
+                _context.Roles.Add(role);
                 _context.SaveChanges();
 
                 return true;

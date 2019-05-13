@@ -12,7 +12,7 @@ namespace Tests_server_app.Models.ViewModels
         public string SignedUpWithAccount { get; set; }
         public string FirstName { get; set; }
         public string SecondName { get; set; }
-        public DateTime BirthDate { get; set; }
+        public string BirthDate { get; set; }
         public string Email { get; set; }
 
         public List<TestVM> Tests { get; set; }
@@ -20,12 +20,17 @@ namespace Tests_server_app.Models.ViewModels
 
         public UserInformationVM(User user)
         {
+            if(user == null)
+            {
+                return;
+            }
+
             Login = user.Login;
             SignedUpWithAccount = user.SignedUpWithAccount.ToString();
             FirstName = user.FirstName;
             SecondName = user.SecondName;
             Email = user.Email;
-            BirthDate = user.BirthDate;
+            BirthDate = user.BirthDate.ToShortDateString();
 
             Tests = new List<TestVM>();
             foreach(var test in user.Tests)

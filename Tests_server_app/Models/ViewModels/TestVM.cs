@@ -12,7 +12,7 @@ namespace Tests_server_app.Models.ViewModels
             LikesCount = test.Test?.LikesCount;
             Title = test.Test?.Title;
             Description = test.Test?.Description;
-            PassedDate = test?.DatePassed;
+            PassedDate = test?.DatePassed.ToShortDateString();
             RightQnswers = test?.CountRightAnswers;
 
             Questions = new List<QuestionVM>();
@@ -33,7 +33,7 @@ namespace Tests_server_app.Models.ViewModels
             LikesCount = test.LikesCount;
             Title = test.Title;
             Description = test.Description;
-            PassedDate = DateTime.MinValue;
+            PassedDate = DateTime.MinValue.ToShortDateString();
             RightQnswers = -1;
 
             Questions = new List<QuestionVM>();
@@ -52,7 +52,7 @@ namespace Tests_server_app.Models.ViewModels
         public ulong? LikesCount { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public DateTime? PassedDate { get; set; }
+        public string PassedDate { get; set; }
         public int? RightQnswers { get; set; }
 
         public List<QuestionVM> Questions { get; set; }

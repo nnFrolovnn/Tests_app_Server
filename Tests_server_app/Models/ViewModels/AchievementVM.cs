@@ -5,10 +5,8 @@ namespace Tests_server_app.Models.ViewModels
 {
     public class AchievementVM
     {
-        private UserAchievement ach;
-
         public byte[] Icon { get; set; }
-        public DateTime AchDate { get; set; }
+        public string AchDate { get; set; }
         public string ThemeName { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -17,7 +15,7 @@ namespace Tests_server_app.Models.ViewModels
         {
             Title = ach.Achievement?.Title;
             Description = ach.Achievement?.Description;
-            AchDate = ach.Date;
+            AchDate = ach.Date.ToShortDateString();
 
             ThemeName = ach.Achievement?.Theme?.ThemeName;
             Icon = ach.Achievement?.Icon?.Data;

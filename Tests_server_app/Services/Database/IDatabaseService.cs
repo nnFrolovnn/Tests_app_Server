@@ -9,8 +9,10 @@ using Tests_server_app.Services.Database;
 
 namespace Tests_server_app.Services.DatabaseServ
 {
-    public interface IDatabaseService: IUserDatabaseService, ITestDatabaseService, IThemeDatabaseService
+    public interface IDatabaseService : IUserDatabaseService, ITestDatabaseService, 
+        IThemeDatabaseService, IRoleDatabaseService
     {
         // contains all methods to interact with database
+        
     }
 }

@@ -30,8 +30,7 @@ namespace Tests_server_app.Controllers
         #region Routed methods
 
         [HttpPost]
-        [Authorize]
-        public async Task<string> SignIn([FromBody] UserLoginVM user)
+        public async Task<SignedUpUser> SignIn([FromBody] UserLoginVM user)
         {
             if (ModelState.IsValid)
             {
@@ -39,17 +38,24 @@ namespace Tests_server_app.Controllers
 
                 if(dbUser != null)
                 {
-                    return AuthenticateUser(dbUser);
+                    var token = AuthenticateUser(dbUser);
+                    var userInfo = _databaseService.GetUserInformationVM(dbUser.Login);
+                    return new SignedUpUser()
+                    {
+                        Token = token,
+                        FirstName = dbUser.FirstName,
+                        Role = dbUser.Role.Name,
+                        Login = dbUser.Login
+                    };
                 }
             }
 
             HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            return "";
+            return null;
         }
 
         [HttpPost]
-        [Authorize]
-        public async Task<string> SignUp([FromBody] UserRegistrationVM user)
+        public async Task<SignedUpUser> SignUp([FromBody] UserRegistrationVM user)
         {
             if (ModelState.IsValid)
             {
@@ -57,19 +63,32 @@ namespace Tests_server_app.Controllers
 
                 if (dbUser != null)
                 {
-                    return AuthenticateUser(dbUser);
+                    var token = AuthenticateUser(dbUser);
+                    var userInfo = _databaseService.GetUserInformationVM(dbUser.Login);
+                    return new SignedUpUser()
+                    {
+                        Token = token,
+                        FirstName = dbUser.FirstName,
+                        Role = dbUser.Role.Name,
+                        Login = dbUser.Login
+                    };
+
                 }
             }
 
             HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            return "";
+            return null;
         }
 
         [HttpGet]
         [Authorize]
         public async Task<UserInformationVM> Info()
         {
-            return _databaseService.GetUserInformationVM(HttpContext.User.Identity.Name);           
+            if (HttpContext.User?.Identity?.Name != null)
+            {
+                return _databaseService.GetUserInformationVM(HttpContext.User.Identity.Name);
+            }
+            return null;
         }
 
         [HttpGet]
@@ -79,9 +98,32 @@ namespace Tests_server_app.Controllers
             return _databaseService.GetUserTests(HttpContext.User.Identity.Name);
         }
 
-        public async Task<ActionResult<bool>> TestPassed([FromQuery] string title, [FromQuery] int countRightAnswers)
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult<bool>> TestPassed([FromQuery] string title, [FromQuery] int countRightAnswers, [FromQuery] int questionsNumber)
         {
-            return _databaseService.AddPassedTestToUser(title, HttpContext.User.Identity.Name, countRightAnswers);
+            return _databaseService.AddPassedTestToUser(title, HttpContext.User.Identity.Name, countRightAnswers, questionsNumber);
+        }
+
+        public async Task<SignedUpUser> Edit([FromBody] EditedUserVM editedUser)
+        {
+            if(ModelState.IsValid)
+            {
+                var user = _databaseService.EditUser(HttpContext.User.Identity.Name, editedUser);
+
+                if(user != null)
+                {
+                    return new SignedUpUser()
+                    {
+                        FirstName = user.FirstName,
+                        Login = user.Login,
+                        Role = user.Role?.Name,
+                        Token = ""
+                    };
+                }              
+            }
+
+            return null;
         }
 
         #endregion

@@ -11,5 +11,7 @@ namespace Tests_server_app.Services.Database
         List<ThemeVM> GetAllThemes();
         bool AddTheme(string themeName);
         bool DeleteTheme(string themeName);
+
+        bool SetThemesToTest(ThemeVM[] themes, string title);
     }
 }

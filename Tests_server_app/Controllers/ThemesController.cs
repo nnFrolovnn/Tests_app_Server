@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tests_server_app.Models.ViewModels;
@@ -14,7 +15,6 @@ namespace Tests_server_app.Controllers
     public class ThemesController : ControllerBase
     {
         private readonly IDatabaseService _databaseService;
-        const byte showCount = 6;
 
         public ThemesController(IDatabaseService databaseService)
         {
@@ -28,12 +28,14 @@ namespace Tests_server_app.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Policy = "Admin")]
         public async Task<ActionResult<bool>> Delete([FromBody] string themeName)
         {
             return _databaseService.DeleteTheme(themeName);
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<bool>> Add([FromBody] string themeName)
         {
             return _databaseService.AddTheme(themeName);
